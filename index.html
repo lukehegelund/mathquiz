@@ -59,9 +59,9 @@
         .quest-button {
             background: linear-gradient(145deg, #DAA520, #B8860B);
             color: #2a1f16;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
-            padding: 15px 30px;
+            padding: 12px 25px;
             border: 3px solid #8B4513;
             border-radius: 15px;
             cursor: pointer;
@@ -70,8 +70,14 @@
                 0 8px 16px rgba(0,0,0,0.4),
                 inset 0 2px 4px rgba(255,255,255,0.3);
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-            margin: 10px;
+            margin: 8px;
             font-family: 'Georgia', serif;
+            display: block;
+            width: 90%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 12px;
         }
 
         .quest-button:hover {
@@ -176,9 +182,9 @@
             background: linear-gradient(145deg, #4a3d32, #3a2d22);
             border: 2px solid #B8860B;
             border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
-            font-size: 16px;
+            padding: 15px;
+            margin-bottom: 10px;
+            font-size: 14px;
             font-weight: bold;
             box-shadow: 
                 inset 0 2px 4px rgba(0,0,0,0.4),
@@ -209,6 +215,19 @@
             color: #FFD700;
             margin-bottom: 25px;
             text-shadow: 0 0 15px rgba(255,215,0,0.6);
+        }
+
+        .settings-display {
+            background: linear-gradient(145deg, #4a3d32, #3a2d22);
+            border: 2px solid #B8860B;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #DEB887;
+            box-shadow: 
+                inset 0 2px 4px rgba(0,0,0,0.4),
+                0 4px 8px rgba(0,0,0,0.3);
         }
 
         .ancient-rune {
@@ -263,6 +282,74 @@
         .sparkle {
             animation: sparkle 1.5s ease-in-out infinite;
         }
+
+        .quest-form {
+            max-height: 70vh;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .quest-form::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .quest-form::-webkit-scrollbar-track {
+            background: #2a1f16;
+            border-radius: 10px;
+        }
+
+        .quest-form::-webkit-scrollbar-thumb {
+            background: #DAA520;
+            border-radius: 10px;
+        }
+
+        .times-table-btn {
+            background: linear-gradient(145deg, #4a3d32, #3a2d22);
+            color: #F5DEB3;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 10px;
+            border: 2px solid #8B4513;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 4px 8px rgba(0,0,0,0.3),
+                inset 0 1px 2px rgba(255,255,255,0.2);
+            font-family: 'Georgia', serif;
+        }
+
+        .times-table-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 6px 12px rgba(0,0,0,0.4),
+                inset 0 1px 2px rgba(255,255,255,0.3),
+                0 0 15px rgba(218, 165, 32, 0.3);
+        }
+
+        .times-table-btn.selected {
+            background: linear-gradient(145deg, #DAA520, #B8860B);
+            color: #2a1f16;
+            border-color: #FFD700;
+            box-shadow: 
+                0 4px 8px rgba(0,0,0,0.4),
+                inset 0 1px 2px rgba(255,255,255,0.4),
+                0 0 15px rgba(255, 215, 0, 0.5);
+        }
+
+        .quest-button:disabled {
+            background: linear-gradient(145deg, #666, #555);
+            color: #999;
+            border-color: #444;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .quest-button:disabled:hover {
+            transform: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
@@ -271,12 +358,53 @@
         <div class="ancient-rune"></div>
         <div class="spell-circle"></div>
         <h1 class="title">⚔️ MATH QUEST ARENA ⚔️</h1>
-        <p class="subtitle">Prove your numerical prowess in the ancient challenges of arithmetic!</p>
+        <p class="subtitle">Choose your mathematical challenge!</p>
         <p style="color: #DEB887; margin-bottom: 30px; font-size: 16px;">
-            Face four mystical trials: Addition, Subtraction, Multiplication, and Division.<br>
-            Speed and accuracy will determine your legendary status!
+            Select your preferred operations to begin your quest
         </p>
-        <button class="quest-button" onclick="startQuest()">🗡️ BEGIN QUEST 🗡️</button>
+        <button class="quest-button" onclick="selectOperations('multiplication')">✨ Multiplication</button>
+        <button class="quest-button" onclick="selectOperations('division')">🔮 Division</button>
+        <button class="quest-button" onclick="selectOperations('addition')">⚔️ Addition</button>
+        <button class="quest-button" onclick="selectOperations('subtraction')">🛡️ Subtraction</button>
+        <button class="quest-button" onclick="selectOperations('mult_div')">✨🔮 Multiplication & Division</button>
+        <button class="quest-button" onclick="selectOperations('add_sub')">⚔️🛡️ Addition & Subtraction</button>
+        <button class="quest-button" onclick="selectOperations('all')">⚔️🛡️✨🔮 All Operations</button>
+        <hr style="border: 1px solid #DAA520; margin: 30px 0; opacity: 0.5;">
+        <button class="quest-button" onclick="showTimesTableScreen()">🎯 Multiplication Target Practice</button>
+    </div>
+
+    <!-- Times Table Selection Screen -->
+    <div id="timesTableScreen" class="screen hidden">
+        <div class="ancient-rune"></div>
+        <div class="spell-circle"></div>
+        <h1 class="title">🎯 TARGET PRACTICE 🎯</h1>
+        <p class="subtitle">Select which times tables to master!</p>
+        <p style="color: #DEB887; margin-bottom: 20px; font-size: 16px;">
+            Choose the multiplication tables you want to practice
+        </p>
+        <div id="timesTableSelector" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">
+            <!-- Times table buttons will be generated here -->
+        </div>
+        <div style="margin: 20px 0;">
+            <button class="quest-button" onclick="selectAllTables()">✨ Select All</button>
+            <button class="quest-button" onclick="clearAllTables()">🔄 Clear All</button>
+        </div>
+        <button class="quest-button" onclick="startTimesTablePractice()" id="startPracticeBtn" disabled>🗡️ Begin Target Practice</button>
+        <button class="quest-button" onclick="goBackFromTimes()">← Back to Main Menu</button>
+    </div>
+
+    <!-- Difficulty Screen -->
+    <div id="difficultyScreen" class="screen hidden">
+        <div class="ancient-rune"></div>
+        <div class="spell-circle"></div>
+        <h1 class="title">⚔️ CHOOSE DIFFICULTY ⚔️</h1>
+        <p class="subtitle">Select the intensity of your mathematical battle!</p>
+        <p style="color: #DEB887; margin-bottom: 30px; font-size: 16px;">
+            Will you face easier foes or harder adversaries?
+        </p>
+        <button class="quest-button" onclick="startQuest('easy')">🗡️ Easy Mode</button>
+        <button class="quest-button" onclick="startQuest('hard')">⚔️ Hard Mode</button>
+        <button class="quest-button" onclick="goBack()">← Back to Operations</button>
     </div>
 
     <!-- Quiz Screen -->
@@ -286,32 +414,8 @@
         <h1 class="title">⚔️ BATTLE IN PROGRESS ⚔️</h1>
         <div class="timer-display" id="timerDisplay">⏰ Time: 0.0 seconds</div>
         
-        <form id="questForm">
-            <div class="quest-challenge">
-                <div class="challenge-number">1</div>
-                <div class="challenge-text" id="challenge1"></div>
-                <input type="number" class="answer-input" name="answer1" required placeholder="?">
-            </div>
-            
-            <div class="quest-challenge">
-                <div class="challenge-number">2</div>
-                <div class="challenge-text" id="challenge2"></div>
-                <input type="number" class="answer-input" name="answer2" required placeholder="?">
-            </div>
-            
-            <div class="quest-challenge">
-                <div class="challenge-number">3</div>
-                <div class="challenge-text" id="challenge3"></div>
-                <input type="number" class="answer-input" name="answer3" required placeholder="?">
-            </div>
-            
-            <div class="quest-challenge">
-                <div class="challenge-number">4</div>
-                <div class="challenge-text" id="challenge4"></div>
-                <input type="number" class="answer-input" name="answer4" required placeholder="?">
-            </div>
-            
-            <button type="submit" class="quest-button">⚡ SUBMIT ANSWERS ⚡</button>
+        <form id="questForm" class="quest-form">
+            <!-- Questions will be generated here -->
         </form>
     </div>
 
@@ -319,7 +423,8 @@
     <div id="resultsScreen" class="screen hidden">
         <div class="ancient-rune"></div>
         <div class="spell-circle"></div>
-        <h1 class="title">🏆 QUEST COMPLETE 🏆</h1>
+        <h1 class="title" id="resultsTitle">🏆 QUEST COMPLETE 🏆</h1>
+        <div class="settings-display" id="settingsDisplay"></div>
         <div class="final-time" id="finalTime"></div>
         <div class="results-list" id="resultsList"></div>
         <button class="quest-button" onclick="restartQuest()">🔄 EMBARK ON NEW QUEST 🔄</button>
@@ -328,45 +433,258 @@
     <script>
         let startTime, timerInterval;
         let challenges = [];
+        let selectedOperations = '';
+        let selectedDifficulty = '';
+        let selectedTimesTables = [];
+        let isTimesTableMode = false;
+
+        const operationConfig = {
+            multiplication: { types: ['×'], symbols: ['✨'], names: ['Multiplication'] },
+            division: { types: ['÷'], symbols: ['🔮'], names: ['Division'] },
+            addition: { types: ['+'], symbols: ['⚔️'], names: ['Addition'] },
+            subtraction: { types: ['-'], symbols: ['🛡️'], names: ['Subtraction'] },
+            mult_div: { types: ['×', '÷'], symbols: ['✨', '🔮'], names: ['Multiplication', 'Division'] },
+            add_sub: { types: ['+', '-'], symbols: ['⚔️', '🛡️'], names: ['Addition', 'Subtraction'] },
+            all: { types: ['+', '-', '×', '÷'], symbols: ['⚔️', '🛡️', '✨', '🔮'], names: ['Addition', 'Subtraction', 'Multiplication', 'Division'] }
+        };
+
+        function selectOperations(operations) {
+            selectedOperations = operations;
+            isTimesTableMode = false;
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('difficultyScreen').classList.remove('hidden');
+        }
+
+        function showTimesTableScreen() {
+            generateTimesTableSelector();
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('timesTableScreen').classList.remove('hidden');
+        }
+
+        function generateTimesTableSelector() {
+            const selector = document.getElementById('timesTableSelector');
+            let html = '';
+            for (let i = 2; i <= 12; i++) {
+                html += `<button class="times-table-btn" onclick="toggleTimesTable(${i})" id="table-${i}">${i}x</button>`;
+            }
+            selector.innerHTML = html;
+        }
+
+        function toggleTimesTable(num) {
+            const btn = document.getElementById(`table-${num}`);
+            const index = selectedTimesTables.indexOf(num);
+            
+            if (index === -1) {
+                selectedTimesTables.push(num);
+                btn.classList.add('selected');
+            } else {
+                selectedTimesTables.splice(index, 1);
+                btn.classList.remove('selected');
+            }
+            
+            document.getElementById('startPracticeBtn').disabled = selectedTimesTables.length === 0;
+        }
+
+        function selectAllTables() {
+            selectedTimesTables = [];
+            for (let i = 2; i <= 12; i++) {
+                selectedTimesTables.push(i);
+                document.getElementById(`table-${i}`).classList.add('selected');
+            }
+            document.getElementById('startPracticeBtn').disabled = false;
+        }
+
+        function clearAllTables() {
+            selectedTimesTables = [];
+            for (let i = 2; i <= 12; i++) {
+                document.getElementById(`table-${i}`).classList.remove('selected');
+            }
+            document.getElementById('startPracticeBtn').disabled = true;
+        }
+
+        function startTimesTablePractice() {
+            isTimesTableMode = true;
+            selectedOperations = 'multiplication';
+            selectedDifficulty = 'times-table';
+            document.getElementById('timesTableScreen').classList.add('hidden');
+            document.getElementById('questScreen').classList.remove('hidden');
+            generateChallenges();
+            startTime = Date.now();
+            timerInterval = setInterval(updateTimer, 100);
+            
+            setTimeout(() => {
+                const firstInput = document.querySelector('input[name="answer0"]');
+                if (firstInput) firstInput.focus();
+            }, 100);
+        }
+
+        function goBackFromTimes() {
+            selectedTimesTables = [];
+            document.getElementById('timesTableScreen').classList.add('hidden');
+            document.getElementById('startScreen').classList.remove('hidden');
+        }
+
+        function goBack() {
+            document.getElementById('difficultyScreen').classList.add('hidden');
+            document.getElementById('startScreen').classList.remove('hidden');
+        }
+
+        function generateNumber(difficulty, operation) {
+            if (isTimesTableMode) {
+                return Math.floor(Math.random() * 9) + 2; // 2-10 for times table practice
+            }
+
+            if (difficulty === 'easy') {
+                if (operation === '+' || operation === '-') {
+                    // For easy add/sub: mix of single digit (2-9) and double digit (10-99)
+                    return Math.random() < 0.5 ? 
+                        Math.floor(Math.random() * 8) + 2 : // 2-9
+                        Math.floor(Math.random() * 90) + 10; // 10-99
+                } else if (operation === '×') {
+                    return Math.floor(Math.random() * 11) + 2; // 2-12
+                } else if (operation === '÷') {
+                    return Math.floor(Math.random() * 12) + 1; // 1-12 for divisors
+                }
+            } else if (difficulty === 'hard') {
+                if (operation === '+' || operation === '-') {
+                    return Math.floor(Math.random() * 90) + 10; // 10-99
+                } else if (operation === '×') {
+                    return Math.random() < 0.5 ?
+                        Math.floor(Math.random() * 11) + 2 : // 2-12
+                        Math.floor(Math.random() * 98) + 2; // 2-99
+                } else if (operation === '÷') {
+                    return Math.floor(Math.random() * 99) + 1; // 1-99 for divisors
+                }
+            }
+            return Math.floor(Math.random() * 9) + 1;
+        }
 
         function generateChallenges() {
             challenges = [];
-            const operations = [
-                { type: '+', symbol: '⚔️', fn: (a, b) => a + b, name: 'Addition' },
-                { type: '-', symbol: '🛡️', fn: (a, b) => a - b, name: 'Subtraction' },
-                { type: '×', symbol: '✨', fn: (a, b) => a * b, name: 'Multiplication' },
-                { type: '÷', symbol: '🔮', fn: (a, b) => a / b, name: 'Division' }
-            ];
-
-            operations.forEach((op, index) => {
-                let a = Math.floor(Math.random() * 9) + 1;
-                let b = Math.floor(Math.random() * 9) + 1;
-                
-                if (op.type === '÷') {
-                    a = a * b; // Ensure integer division result
+            
+            if (isTimesTableMode) {
+                // Times table practice mode
+                for (let i = 0; i < 10; i++) {
+                    const table = selectedTimesTables[Math.floor(Math.random() * selectedTimesTables.length)];
+                    const multiplier = Math.floor(Math.random() * 11) + 1; // 1-11
+                    const answer = table * multiplier;
+                    
+                    challenges.push({
+                        question: `${table} × ${multiplier}`,
+                        answer: answer,
+                        operation: 'Multiplication',
+                        symbol: '🎯'
+                    });
                 }
-                
-                const answer = op.fn(a, b);
-                challenges.push({ 
-                    question: `${a} ${op.type} ${b}`, 
-                    answer: answer,
-                    operation: op.name
-                });
-                
-                document.getElementById(`challenge${index + 1}`).innerHTML = 
-                    `${op.symbol} ${a} <span class="operation-symbol">${op.type}</span> ${b} <span class="operation-symbol">=</span>`;
-            });
+            } else {
+                // Regular mode
+                const config = operationConfig[selectedOperations];
+                const operations = config.types.map((type, i) => ({
+                    type: type,
+                    symbol: config.symbols[i],
+                    name: config.names[i]
+                }));
+
+                for (let i = 0; i < 10; i++) {
+                    const op = operations[Math.floor(Math.random() * operations.length)];
+                    let a, b, answer;
+
+                    if (op.type === '+') {
+                        a = generateNumber(selectedDifficulty, '+');
+                        b = generateNumber(selectedDifficulty, '+');
+                        // Ensure one is single digit and one is double digit for easy mode
+                        if (selectedDifficulty === 'easy') {
+                            while ((a < 10 && b < 10) || (a >= 10 && b >= 10) || a === 1 || b === 1 || a === 0 || b === 0) {
+                                a = generateNumber(selectedDifficulty, '+');
+                                b = generateNumber(selectedDifficulty, '+');
+                            }
+                        }
+                        answer = a + b;
+                    } else if (op.type === '-') {
+                        a = generateNumber(selectedDifficulty, '-');
+                        b = generateNumber(selectedDifficulty, '-');
+                        // Ensure one is single digit and one is double digit for easy mode
+                        if (selectedDifficulty === 'easy') {
+                            while ((a < 10 && b < 10) || (a >= 10 && b >= 10) || a === 1 || b === 1 || a === 0 || b === 0) {
+                                a = generateNumber(selectedDifficulty, '-');
+                                b = generateNumber(selectedDifficulty, '-');
+                            }
+                        }
+                        // Ensure no negative results
+                        if (a < b) {
+                            [a, b] = [b, a];
+                        }
+                        answer = a - b;
+                    } else if (op.type === '×') {
+                        if (selectedDifficulty === 'easy') {
+                            a = Math.floor(Math.random() * 11) + 2; // 2-12
+                            b = Math.floor(Math.random() * 11) + 2; // 2-12
+                        } else {
+                            a = Math.floor(Math.random() * 11) + 2; // 2-12
+                            b = Math.floor(Math.random() * 98) + 2; // 2-99
+                        }
+                        answer = a * b;
+                    } else if (op.type === '÷') {
+                        if (selectedDifficulty === 'easy') {
+                            b = Math.floor(Math.random() * 12) + 1; // 1-12 divisor
+                            answer = Math.floor(Math.random() * 12) + 1; // 1-12 quotient
+                            a = b * answer;
+                        } else {
+                            // Hard: 3-digit ÷ 1-2 digit
+                            a = Math.floor(Math.random() * 900) + 100; // 100-999
+                            b = Math.floor(Math.random() * 89) + 2; // 2-90
+                            // Ensure clean division
+                            answer = Math.floor(a / b);
+                            a = b * answer;
+                        }
+                    }
+
+                    challenges.push({
+                        question: `${a} ${op.type} ${b}`,
+                        answer: answer,
+                        operation: op.name,
+                        symbol: op.symbol
+                    });
+                }
+            }
+
+            generateQuestForm();
         }
 
-        function startQuest() {
-            document.getElementById('startScreen').classList.add('hidden');
+        function generateQuestForm() {
+            const form = document.getElementById('questForm');
+            let formHTML = '';
+
+            challenges.forEach((challenge, i) => {
+                formHTML += `
+                    <div class="quest-challenge">
+                        <div class="challenge-number">${i + 1}</div>
+                        <div class="challenge-text">
+                            ${challenge.symbol} ${challenge.question} <span class="operation-symbol">=</span>
+                        </div>
+                        <input type="number" class="answer-input" name="answer${i}" required placeholder="?" step="any">
+                    </div>
+                `;
+            });
+
+            formHTML += '<button type="submit" class="quest-button" style="margin-top: 20px;">⚡ SUBMIT ANSWERS ⚡</button>';
+            form.innerHTML = formHTML;
+        }
+
+        function startQuest(difficulty) {
+            selectedDifficulty = difficulty;
+            isTimesTableMode = false;
+            document.getElementById('difficultyScreen').classList.add('hidden');
             document.getElementById('questScreen').classList.remove('hidden');
             generateChallenges();
             startTime = Date.now();
             timerInterval = setInterval(updateTimer, 100);
             
             // Focus on first input
-            document.querySelector('input[name="answer1"]').focus();
+            setTimeout(() => {
+                const firstInput = document.querySelector('input[name="answer0"]');
+                if (firstInput) firstInput.focus();
+            }, 100);
         }
 
         function updateTimer() {
@@ -382,21 +700,20 @@
         document.getElementById('questForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const elapsedTime = stopTimer();
-            const form = e.target;
+            const formData = new FormData(e.target);
             
-            const answers = [
-                parseFloat(form.answer1.value),
-                parseFloat(form.answer2.value),
-                parseFloat(form.answer3.value),
-                parseFloat(form.answer4.value)
-            ];
+            const answers = [];
+            for (let i = 0; i < 10; i++) {
+                answers.push(parseFloat(formData.get(`answer${i}`)) || 0);
+            }
             
             const results = challenges.map((challenge, i) => ({
                 question: challenge.question,
                 operation: challenge.operation,
+                symbol: challenge.symbol,
                 userAnswer: answers[i],
                 correctAnswer: challenge.answer,
-                isCorrect: Math.abs(answers[i] - challenge.answer) < 0.01 // Handle floating point precision
+                isCorrect: Math.abs(answers[i] - challenge.answer) < 0.01
             }));
 
             displayResults(results, elapsedTime);
@@ -407,31 +724,53 @@
             document.getElementById('resultsScreen').classList.remove('hidden');
             
             const correctCount = results.filter(r => r.isCorrect).length;
-            const title = correctCount === 4 ? '🏆 LEGENDARY HERO 🏆' : 
-                         correctCount === 3 ? '⚔️ NOBLE WARRIOR ⚔️' :
-                         correctCount === 2 ? '🛡️ BRAVE ADVENTURER 🛡️' : '🔮 APPRENTICE MAGE 🔮';
+            const title = correctCount === 10 ? '🏆 LEGENDARY HERO 🏆' : 
+                         correctCount >= 8 ? '⚔️ NOBLE WARRIOR ⚔️' :
+                         correctCount >= 6 ? '🛡️ BRAVE ADVENTURER 🛡️' : 
+                         correctCount >= 4 ? '🔮 APPRENTICE MAGE 🔮' : '📚 NOVICE SCHOLAR 📚';
             
-            document.querySelector('#resultsScreen .title').textContent = title;
+            document.getElementById('resultsTitle').textContent = title;
+            
+            // Display settings
+            let settingsText;
+            if (isTimesTableMode) {
+                settingsText = `
+                    <strong>Quest Settings:</strong><br>
+                    Mode: Multiplication Target Practice<br>
+                    Times Tables: ${selectedTimesTables.join(', ')}x<br>
+                    Score: ${correctCount}/10 correct
+                `;
+            } else {
+                const operationNames = operationConfig[selectedOperations].names.join(' & ');
+                const difficultyText = selectedDifficulty === 'easy' ? 'Easy' : 'Hard';
+                settingsText = `
+                    <strong>Quest Settings:</strong><br>
+                    Operations: ${operationNames}<br>
+                    Difficulty: ${difficultyText}<br>
+                    Score: ${correctCount}/10 correct
+                `;
+            }
+            document.getElementById('settingsDisplay').innerHTML = settingsText;
+            
             document.getElementById('finalTime').textContent = `⏰ Quest Completed in ${elapsedTime} seconds`;
             
             const resultsList = document.getElementById('resultsList');
-            resultsList.innerHTML = results.map((r, i) => {
-                const symbols = ['⚔️', '🛡️', '✨', '🔮'];
-                return `
-                    <div class="result-item ${r.isCorrect ? 'result-correct' : 'result-incorrect'}">
-                        <strong>${symbols[i]} ${r.operation} Challenge:</strong><br>
-                        ${r.question} = ?<br>
-                        Your Answer: ${r.userAnswer} | Correct Answer: ${r.correctAnswer}<br>
-                        <em>${r.isCorrect ? '✅ Victory!' : '❌ Defeated!'}</em>
-                    </div>
-                `;
-            }).join('');
+            resultsList.innerHTML = results.map((r, i) => `
+                <div class="result-item ${r.isCorrect ? 'result-correct' : 'result-incorrect'}">
+                    <strong>${r.symbol} ${r.operation}:</strong> ${r.question} = ?<br>
+                    Your Answer: ${r.userAnswer} | Correct: ${r.correctAnswer}
+                    <em>${r.isCorrect ? ' ✅' : ' ❌'}</em>
+                </div>
+            `).join('');
         }
 
         function restartQuest() {
             document.getElementById('resultsScreen').classList.add('hidden');
             document.getElementById('startScreen').classList.remove('hidden');
-            document.getElementById('questForm').reset();
+            selectedOperations = '';
+            selectedDifficulty = '';
+            selectedTimesTables = [];
+            isTimesTableMode = false;
         }
 
         // Add Enter key navigation between inputs
