@@ -402,9 +402,22 @@
         <p style="color: #DEB887; margin-bottom: 30px; font-size: 16px;">
             Will you face easier foes or harder adversaries?
         </p>
-        <button class="quest-button" onclick="startQuest('easy')">🗡️ Easy Mode</button>
-        <button class="quest-button" onclick="startQuest('hard')">⚔️ Hard Mode</button>
+        <button class="quest-button" onclick="showStartButton('easy')">🗡️ Easy Mode</button>
+        <button class="quest-button" onclick="showStartButton('hard')">⚔️ Hard Mode</button>
         <button class="quest-button" onclick="goBack()">← Back to Operations</button>
+    </div>
+
+    <!-- Start Button Screen -->
+    <div id="startButtonScreen" class="screen hidden">
+        <div class="ancient-rune"></div>
+        <div class="spell-circle"></div>
+        <h1 class="title">⚔️ PREPARE FOR BATTLE ⚔️</h1>
+        <p class="subtitle">Ready to face the challenge?</p>
+        <p style="color: #DEB887; margin-bottom: 30px; font-size: 16px;">
+            Click Start when you're ready to begin your 100-second quest!
+        </p>
+        <button class="quest-button" onclick="startQuest()">⚡ START QUEST ⚡</button>
+        <button class="quest-button" onclick="goBackFromStart()">← Back to Difficulty</button>
     </div>
 
     <!-- Quiz Screen -->
@@ -412,8 +425,8 @@
         <div class="ancient-rune sparkle"></div>
         <div class="spell-circle"></div>
         <h1 class="title">⚔️ BATTLE IN PROGRESS ⚔️</h1>
-        <div class="timer-display" id="timerDisplay">⏰ Time: 0.0 seconds</div>
-        
+        <div class="timer-display" id="timerDisplay">⏰ Time Remaining: 100.0 seconds</div>
+        <div class="settings-display" id="currentSettings"></div>
         <form id="questForm" class="quest-form">
             <!-- Questions will be generated here -->
         </form>
@@ -433,10 +446,12 @@
     <script>
         let startTime, timerInterval;
         let challenges = [];
+        let results = [];
         let selectedOperations = '';
         let selectedDifficulty = '';
         let selectedTimesTables = [];
         let isTimesTableMode = false;
+        const TOTAL_TIME = 100000; // 100 seconds in milliseconds
 
         const operationConfig = {
             multiplication: { types: ['×'], symbols: ['✨'], names: ['Multiplication'] },
@@ -507,15 +522,7 @@
             selectedOperations = 'multiplication';
             selectedDifficulty = 'times-table';
             document.getElementById('timesTableScreen').classList.add('hidden');
-            document.getElementById('questScreen').classList.remove('hidden');
-            generateChallenges();
-            startTime = Date.now();
-            timerInterval = setInterval(updateTimer, 100);
-            
-            setTimeout(() => {
-                const firstInput = document.querySelector('input[name="answer0"]');
-                if (firstInput) firstInput.focus();
-            }, 100);
+            document.getElementById('startButtonScreen').classList.remove('hidden');
         }
 
         function goBackFromTimes() {
@@ -529,6 +536,21 @@
             document.getElementById('startScreen').classList.remove('hidden');
         }
 
+        function goBackFromStart() {
+            document.getElementById('startButtonScreen').classList.add('hidden');
+            if (isTimesTableMode) {
+                document.getElementById('timesTableScreen').classList.remove('hidden');
+            } else {
+                document.getElementById('difficultyScreen').classList.remove('hidden');
+            }
+        }
+
+        function showStartButton(difficulty) {
+            selectedDifficulty = difficulty;
+            document.getElementById('difficultyScreen').classList.add('hidden');
+            document.getElementById('startButtonScreen').classList.remove('hidden');
+        }
+
         function generateNumber(difficulty, operation) {
             if (isTimesTableMode) {
                 return Math.floor(Math.random() * 9) + 2; // 2-10 for times table practice
@@ -536,7 +558,6 @@
 
             if (difficulty === 'easy') {
                 if (operation === '+' || operation === '-') {
-                    // For easy add/sub: mix of single digit (2-9) and double digit (10-99)
                     return Math.random() < 0.5 ? 
                         Math.floor(Math.random() * 8) + 2 : // 2-9
                         Math.floor(Math.random() * 90) + 10; // 10-99
@@ -559,128 +580,124 @@
             return Math.floor(Math.random() * 9) + 1;
         }
 
-        function generateChallenges() {
-            challenges = [];
+        function generateChallenge() {
+            let a, b, answer, op;
             
             if (isTimesTableMode) {
-                // Times table practice mode
-                for (let i = 0; i < 10; i++) {
-                    const table = selectedTimesTables[Math.floor(Math.random() * selectedTimesTables.length)];
-                    const multiplier = Math.floor(Math.random() * 11) + 1; // 1-11
-                    const answer = table * multiplier;
-                    
-                    challenges.push({
-                        question: `${table} × ${multiplier}`,
-                        answer: answer,
-                        operation: 'Multiplication',
-                        symbol: '🎯'
-                    });
-                }
-            } else {
-                // Regular mode
-                const config = operationConfig[selectedOperations];
-                const operations = config.types.map((type, i) => ({
-                    type: type,
-                    symbol: config.symbols[i],
-                    name: config.names[i]
-                }));
+                const table = selectedTimesTables[Math.floor(Math.random() * selectedTimesTables.length)];
+                const multiplier = Math.floor(Math.random() * 11) + 1; // 1-11
+                answer = table * multiplier;
+                return {
+                    question: `${table} × ${multiplier}`,
+                    answer: answer,
+                    operation: 'Multiplication',
+                    symbol: '🎯'
+                };
+            }
 
-                for (let i = 0; i < 10; i++) {
-                    const op = operations[Math.floor(Math.random() * operations.length)];
-                    let a, b, answer;
+            const config = operationConfig[selectedOperations];
+            const operations = config.types.map((type, i) => ({
+                type: type,
+                symbol: config.symbols[i],
+                name: config.names[i]
+            }));
+            op = operations[Math.floor(Math.random() * operations.length)];
 
-                    if (op.type === '+') {
+            if (op.type === '+') {
+                a = generateNumber(selectedDifficulty, '+');
+                b = generateNumber(selectedDifficulty, '+');
+                if (selectedDifficulty === 'easy') {
+                    while ((a < 10 && b < 10) || (a >= 10 && b >= 10) || a === 1 || b === 1 || a === 0 || b === 0) {
                         a = generateNumber(selectedDifficulty, '+');
                         b = generateNumber(selectedDifficulty, '+');
-                        // Ensure one is single digit and one is double digit for easy mode
-                        if (selectedDifficulty === 'easy') {
-                            while ((a < 10 && b < 10) || (a >= 10 && b >= 10) || a === 1 || b === 1 || a === 0 || b === 0) {
-                                a = generateNumber(selectedDifficulty, '+');
-                                b = generateNumber(selectedDifficulty, '+');
-                            }
-                        }
-                        answer = a + b;
-                    } else if (op.type === '-') {
+                    }
+                }
+                answer = a + b;
+            } else if (op.type === '-') {
+                a = generateNumber(selectedDifficulty, '-');
+                b = generateNumber(selectedDifficulty, '-');
+                if (selectedDifficulty === 'easy') {
+                    while ((a < 10 && b < 10) || (a >= 10 && b >= 10) || a === 1 || b === 1 || a === 0 || b === 0) {
                         a = generateNumber(selectedDifficulty, '-');
                         b = generateNumber(selectedDifficulty, '-');
-                        // Ensure one is single digit and one is double digit for easy mode
-                        if (selectedDifficulty === 'easy') {
-                            while ((a < 10 && b < 10) || (a >= 10 && b >= 10) || a === 1 || b === 1 || a === 0 || b === 0) {
-                                a = generateNumber(selectedDifficulty, '-');
-                                b = generateNumber(selectedDifficulty, '-');
-                            }
-                        }
-                        // Ensure no negative results
-                        if (a < b) {
-                            [a, b] = [b, a];
-                        }
-                        answer = a - b;
-                    } else if (op.type === '×') {
-                        if (selectedDifficulty === 'easy') {
-                            a = Math.floor(Math.random() * 11) + 2; // 2-12
-                            b = Math.floor(Math.random() * 11) + 2; // 2-12
-                        } else {
-                            a = Math.floor(Math.random() * 11) + 2; // 2-12
-                            b = Math.floor(Math.random() * 98) + 2; // 2-99
-                        }
-                        answer = a * b;
-                    } else if (op.type === '÷') {
-                        if (selectedDifficulty === 'easy') {
-                            b = Math.floor(Math.random() * 12) + 1; // 1-12 divisor
-                            answer = Math.floor(Math.random() * 12) + 1; // 1-12 quotient
-                            a = b * answer;
-                        } else {
-                            // Hard: 3-digit ÷ 1-2 digit
-                            a = Math.floor(Math.random() * 900) + 100; // 100-999
-                            b = Math.floor(Math.random() * 89) + 2; // 2-90
-                            // Ensure clean division
-                            answer = Math.floor(a / b);
-                            a = b * answer;
-                        }
                     }
-
-                    challenges.push({
-                        question: `${a} ${op.type} ${b}`,
-                        answer: answer,
-                        operation: op.name,
-                        symbol: op.symbol
-                    });
+                }
+                if (a < b) {
+                    [a, b] = [b, a];
+                }
+                answer = a - b;
+            } else if (op.type === '×') {
+ if (selectedDifficulty === 'easy') {
+                    a = Math.floor(Math.random() * 11) + 2; // 2-12
+                    b = Math.floor(Math.random() * 11) + 2; // 2-12
+                } else {
+                    a = Math.floor(Math.random() * 11) + 2; // 2-12
+                    b = Math.floor(Math.random() * 98) + 2; // 2-99
+                }
+                answer = a * b;
+            } else if (op.type === '÷') {
+                if (selectedDifficulty === 'easy') {
+                    b = Math.floor(Math.random() * 12) + 1; // 1-12 divisor
+                    answer = Math.floor(Math.random() * 12) + 1; // 1-12 quotient
+                    a = b * answer;
+                } else {
+                    a = Math.floor(Math.random() * 900) + 100; // 100-999
+                    b = Math.floor(Math.random() * 89) + 2; // 2-90
+                    answer = Math.floor(a / b);
+                    a = b * answer;
                 }
             }
 
-            generateQuestForm();
+            return {
+                question: `${a} ${op.type} ${b}`,
+                answer: answer,
+                operation: op.name,
+                symbol: op.symbol
+            };
         }
 
         function generateQuestForm() {
+            challenges = [generateChallenge()];
             const form = document.getElementById('questForm');
-            let formHTML = '';
-
-            challenges.forEach((challenge, i) => {
-                formHTML += `
-                    <div class="quest-challenge">
-                        <div class="challenge-number">${i + 1}</div>
-                        <div class="challenge-text">
-                            ${challenge.symbol} ${challenge.question} <span class="operation-symbol">=</span>
-                        </div>
-                        <input type="number" class="answer-input" name="answer${i}" required placeholder="?" step="any">
+            let formHTML = `
+                <div class="quest-challenge">
+                    <div class="challenge-number">1</div>
+                    <div class="challenge-text">
+                        ${challenges[0].symbol} ${challenges[0].question} <span class="operation-symbol">=</span>
                     </div>
-                `;
-            });
-
-            formHTML += '<button type="submit" class="quest-button" style="margin-top: 20px;">⚡ SUBMIT ANSWERS ⚡</button>';
+                    <input type="number" class="answer-input" name="answer0" required placeholder="?" step="any">
+                </div>
+                <button type="submit" class="quest-button" style="margin-top: 20px;">⚡ SUBMIT ANSWER ⚡</button>
+            `;
             form.innerHTML = formHTML;
+
+            // Display current settings
+            let settingsText;
+            if (isTimesTableMode) {
+                settingsText = `
+                    <strong>Current Quest:</strong><br>
+                    Mode: Multiplication Target Practice<br>
+                    Times Tables: ${selectedTimesTables.join(', ')}x
+                `;
+            } else {
+                const operationNames = operationConfig[selectedOperations].names.join(' & ');
+                const difficultyText = selectedDifficulty === 'easy' ? 'Easy' : 'Hard';
+                settingsText = `
+                    <strong>Current Quest:</strong><br>
+                    Operations: ${operationNames}<br>
+                    Difficulty: ${difficultyText}
+                `;
+            }
+            document.getElementById('currentSettings').innerHTML = settingsText;
         }
 
-        function startQuest(difficulty) {
-            selectedDifficulty = difficulty;
-            isTimesTableMode = false;
-            document.getElementById('difficultyScreen').classList.add('hidden');
+        function startQuest() {
+            document.getElementById('startButtonScreen').classList.add('hidden');
             document.getElementById('questScreen').classList.remove('hidden');
-            generateChallenges();
+            results = [];
+            generateQuestForm();
             startTime = Date.now();
             timerInterval = setInterval(updateTimer, 100);
-            
-            // Focus on first input
             setTimeout(() => {
                 const firstInput = document.querySelector('input[name="answer0"]');
                 if (firstInput) firstInput.focus();
@@ -688,71 +705,81 @@
         }
 
         function updateTimer() {
-            const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-            document.getElementById('timerDisplay').textContent = `⏰ Time: ${elapsed} seconds`;
-        }
-
-        function stopTimer() {
-            clearInterval(timerInterval);
-            return ((Date.now() - startTime) / 1000).toFixed(1);
+            const elapsed = Date.now() - startTime;
+            const remaining = Math.max(0, (TOTAL_TIME - elapsed) / 1000).toFixed(1);
+            document.getElementById('timerDisplay').textContent = `⏰ Time Remaining: ${remaining} seconds`;
+            if (remaining <= 0) {
+                clearInterval(timerInterval);
+                displayResults();
+            }
         }
 
         document.getElementById('questForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const elapsedTime = stopTimer();
             const formData = new FormData(e.target);
+            const userAnswer = parseFloat(formData.get('answer0')) || 0;
+            const challenge = challenges[0];
             
-            const answers = [];
-            for (let i = 0; i < 10; i++) {
-                answers.push(parseFloat(formData.get(`answer${i}`)) || 0);
-            }
-            
-            const results = challenges.map((challenge, i) => ({
+            results.push({
                 question: challenge.question,
                 operation: challenge.operation,
                 symbol: challenge.symbol,
-                userAnswer: answers[i],
+                userAnswer: userAnswer,
                 correctAnswer: challenge.answer,
-                isCorrect: Math.abs(answers[i] - challenge.answer) < 0.01
-            }));
+                isCorrect: Math.abs(userAnswer - challenge.answer) < 0.01
+            });
 
-            displayResults(results, elapsedTime);
+            if ((Date.now() - startTime) < TOTAL_TIME) {
+                generateQuestForm();
+                setTimeout(() => {
+                    const input = document.querySelector('input[name="answer0"]');
+                    if (input) input.focus();
+                }, 100);
+            } else {
+                clearInterval(timerInterval);
+                displayResults();
+            }
         });
 
-        function displayResults(results, elapsedTime) {
+        function displayResults() {
             document.getElementById('questScreen').classList.add('hidden');
             document.getElementById('resultsScreen').classList.remove('hidden');
             
             const correctCount = results.filter(r => r.isCorrect).length;
-            const title = correctCount === 10 ? '🏆 LEGENDARY HERO 🏆' : 
-                         correctCount >= 8 ? '⚔️ NOBLE WARRIOR ⚔️' :
-                         correctCount >= 6 ? '🛡️ BRAVE ADVENTURER 🛡️' : 
-                         correctCount >= 4 ? '🔮 APPRENTICE MAGE 🔮' : '📚 NOVICE SCHOLAR 📚';
+            const totalQuestions = results.length;
+            const avgTime = totalQuestions > 0 ? ((TOTAL_TIME / 1000) / totalQuestions).toFixed(1) : 0;
+            const title = correctCount === totalQuestions && totalQuestions > 0 ? '🏆 LEGENDARY HERO 🏆' : 
+                         correctCount >= totalQuestions * 0.8 ? '⚔️ NOBLE WARRIOR ⚔️' :
+                         correctCount >= totalQuestions * 0.6 ? '🛡️ BRAVE ADVENTURER 🛡️' : 
+                         correctCount >= totalQuestions * 0.4 ? '🔮 APPRENTICE MAGE 🔮' : '📚 NOVICE SCHOLAR 📚';
             
             document.getElementById('resultsTitle').textContent = title;
             
-            // Display settings
             let settingsText;
             if (isTimesTableMode) {
                 settingsText = `
-                    <strong>Quest Settings:</strong><br>
+                    <strong>Quest Results:</strong><br>
                     Mode: Multiplication Target Practice<br>
                     Times Tables: ${selectedTimesTables.join(', ')}x<br>
-                    Score: ${correctCount}/10 correct
+                    Total Questions: ${totalQuestions}<br>
+                    Score: ${correctCount}/${totalQuestions} correct<br>
+                    Average Time per Question: ${avgTime} seconds
                 `;
             } else {
                 const operationNames = operationConfig[selectedOperations].names.join(' & ');
                 const difficultyText = selectedDifficulty === 'easy' ? 'Easy' : 'Hard';
                 settingsText = `
-                    <strong>Quest Settings:</strong><br>
+                    <strong>Quest Results:</strong><br>
                     Operations: ${operationNames}<br>
                     Difficulty: ${difficultyText}<br>
-                    Score: ${correctCount}/10 correct
+                    Total Questions: ${totalQuestions}<br>
+                    Score: ${correctCount}/${totalQuestions} correct<br>
+                    Average Time per Question: ${avgTime} seconds
                 `;
             }
             document.getElementById('settingsDisplay').innerHTML = settingsText;
             
-            document.getElementById('finalTime').textContent = `⏰ Quest Completed in ${elapsedTime} seconds`;
+            document.getElementById('finalTime').textContent = `⏰ Quest Completed in 100.0 seconds`;
             
             const resultsList = document.getElementById('resultsList');
             resultsList.innerHTML = results.map((r, i) => `
@@ -771,20 +798,13 @@
             selectedDifficulty = '';
             selectedTimesTables = [];
             isTimesTableMode = false;
+            results = [];
         }
 
-        // Add Enter key navigation between inputs
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && e.target.classList.contains('answer-input')) {
                 e.preventDefault();
-                const inputs = Array.from(document.querySelectorAll('.answer-input'));
-                const currentIndex = inputs.indexOf(e.target);
-                
-                if (currentIndex < inputs.length - 1) {
-                    inputs[currentIndex + 1].focus();
-                } else {
-                    document.querySelector('button[type="submit"]').click();
-                }
+                document.querySelector('button[type="submit"]').click();
             }
         });
     </script>
