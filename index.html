@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚔️ Math Quest Arena ⚔️</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: radial-gradient(ellipse at center, #2c1810, #1a0f0a);
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(138, 43, 226, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 40% 70%, rgba(30, 144, 255, 0.2) 0%, transparent 50%);
+            font-family: 'Georgia', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #F5DEB3;
+        }
+
+        .screen {
+            background: linear-gradient(145deg, #3a2f26, #2a1f16);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 
+                0 25px 50px rgba(0,0,0,0.6),
+                inset 0 1px 0 rgba(255,215,0,0.2),
+                0 0 30px rgba(138, 43, 226, 0.3);
+            border: 3px solid #DAA520;
+            position: relative;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .title {
+            color: #FFD700;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-shadow: 
+                2px 2px 4px rgba(0,0,0,0.8),
+                0 0 15px rgba(255,215,0,0.6);
+            letter-spacing: 3px;
+            font-family: 'Times New Roman', serif;
+        }
+
+        .subtitle {
+            color: #DEB887;
+            font-size: 18px;
+            margin-bottom: 30px;
+            font-style: italic;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+        }
+
+        .quest-button {
+            background: linear-gradient(145deg, #DAA520, #B8860B);
+            color: #2a1f16;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 15px 30px;
+            border: 3px solid #8B4513;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 8px 16px rgba(0,0,0,0.4),
+                inset 0 2px 4px rgba(255,255,255,0.3);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            margin: 10px;
+            font-family: 'Georgia', serif;
+        }
+
+        .quest-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 12px 24px rgba(0,0,0,0.5),
+                inset 0 2px 4px rgba(255,255,255,0.4),
+                0 0 20px rgba(218, 165, 32, 0.5);
+            background: linear-gradient(145deg, #FFD700, #DAA520);
+        }
+
+        .quest-button:active {
+            transform: translateY(-1px);
+        }
+
+        .timer-display {
+            background: linear-gradient(145deg, #4a3d32, #3a2d22);
+            border: 2px solid #B8860B;
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 25px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 0 0 10px rgba(255,215,0,0.5);
+            box-shadow: 
+                inset 0 2px 4px rgba(0,0,0,0.4),
+                0 0 15px rgba(184, 134, 11, 0.2);
+        }
+
+        .quest-challenge {
+            background: linear-gradient(145deg, #4a3d32, #3a2d22);
+            border: 2px solid #B8860B;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 
+                inset 0 2px 4px rgba(0,0,0,0.4),
+                0 6px 12px rgba(0,0,0,0.3),
+                0 0 15px rgba(184, 134, 11, 0.2);
+            position: relative;
+        }
+
+        .challenge-number {
+            position: absolute;
+            top: -15px;
+            left: -15px;
+            background: linear-gradient(145deg, #DAA520, #B8860B);
+            color: #2a1f16;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+            box-shadow: 
+                0 4px 8px rgba(0,0,0,0.4),
+                inset 0 1px 2px rgba(255,255,255,0.3);
+            border: 2px solid #8B4513;
+        }
+
+        .challenge-text {
+            font-size: 28px;
+            font-weight: bold;
+            color: #F5DEB3;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .answer-input {
+            background: linear-gradient(145deg, #2a1f16, #1a0f0a);
+            border: 3px solid #8B4513;
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #FFD700;
+            text-align: center;
+            width: 120px;
+            box-shadow: 
+                inset 0 2px 4px rgba(0,0,0,0.6),
+                0 0 10px rgba(255,215,0,0.3);
+            font-family: 'Georgia', serif;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: #DAA520;
+            box-shadow: 
+                inset 0 2px 4px rgba(0,0,0,0.6),
+                0 0 20px rgba(218, 165, 32, 0.5);
+        }
+
+        .results-list {
+            text-align: left;
+            margin: 20px 0;
+        }
+
+        .result-item {
+            background: linear-gradient(145deg, #4a3d32, #3a2d22);
+            border: 2px solid #B8860B;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 
+                inset 0 2px 4px rgba(0,0,0,0.4),
+                0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .result-correct {
+            border-color: #228B22;
+            color: #90EE90;
+            box-shadow: 
+                inset 0 2px 4px rgba(0,0,0,0.4),
+                0 4px 8px rgba(0,0,0,0.3),
+                0 0 15px rgba(34, 139, 34, 0.3);
+        }
+
+        .result-incorrect {
+            border-color: #DC143C;
+            color: #FFB6C1;
+            box-shadow: 
+                inset 0 2px 4px rgba(0,0,0,0.4),
+                0 4px 8px rgba(0,0,0,0.3),
+                0 0 15px rgba(220, 20, 60, 0.3);
+        }
+
+        .final-time {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FFD700;
+            margin-bottom: 25px;
+            text-shadow: 0 0 15px rgba(255,215,0,0.6);
+        }
+
+        .ancient-rune {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(45deg, #DAA520, #B8860B);
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            box-shadow: 0 2px 8px rgba(218, 165, 32, 0.5);
+        }
+
+        .spell-circle {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            width: 35px;
+            height: 35px;
+            border: 3px solid #DAA520;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,215,0,0.2), transparent);
+            box-shadow: 0 0 15px rgba(218, 165, 32, 0.4);
+        }
+
+        .spell-circle::before {
+            content: '✨';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            color: #FFD700;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .operation-symbol {
+            color: #FFD700;
+            font-size: 32px;
+            text-shadow: 0 0 10px rgba(255,215,0,0.6);
+            margin: 0 10px;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .sparkle {
+            animation: sparkle 1.5s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Start Screen -->
+    <div id="startScreen" class="screen">
+        <div class="ancient-rune"></div>
+        <div class="spell-circle"></div>
+        <h1 class="title">⚔️ MATH QUEST ARENA ⚔️</h1>
+        <p class="subtitle">Prove your numerical prowess in the ancient challenges of arithmetic!</p>
+        <p style="color: #DEB887; margin-bottom: 30px; font-size: 16px;">
+            Face four mystical trials: Addition, Subtraction, Multiplication, and Division.<br>
+            Speed and accuracy will determine your legendary status!
+        </p>
+        <button class="quest-button" onclick="startQuest()">🗡️ BEGIN QUEST 🗡️</button>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="questScreen" class="screen hidden">
+        <div class="ancient-rune sparkle"></div>
+        <div class="spell-circle"></div>
+        <h1 class="title">⚔️ BATTLE IN PROGRESS ⚔️</h1>
+        <div class="timer-display" id="timerDisplay">⏰ Time: 0.0 seconds</div>
+        
+        <form id="questForm">
+            <div class="quest-challenge">
+                <div class="challenge-number">1</div>
+                <div class="challenge-text" id="challenge1"></div>
+                <input type="number" class="answer-input" name="answer1" required placeholder="?">
+            </div>
+            
+            <div class="quest-challenge">
+                <div class="challenge-number">2</div>
+                <div class="challenge-text" id="challenge2"></div>
+                <input type="number" class="answer-input" name="answer2" required placeholder="?">
+            </div>
+            
+            <div class="quest-challenge">
+                <div class="challenge-number">3</div>
+                <div class="challenge-text" id="challenge3"></div>
+                <input type="number" class="answer-input" name="answer3" required placeholder="?">
+            </div>
+            
+            <div class="quest-challenge">
+                <div class="challenge-number">4</div>
+                <div class="challenge-text" id="challenge4"></div>
+                <input type="number" class="answer-input" name="answer4" required placeholder="?">
+            </div>
+            
+            <button type="submit" class="quest-button">⚡ SUBMIT ANSWERS ⚡</button>
+        </form>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="resultsScreen" class="screen hidden">
+        <div class="ancient-rune"></div>
+        <div class="spell-circle"></div>
+        <h1 class="title">🏆 QUEST COMPLETE 🏆</h1>
+        <div class="final-time" id="finalTime"></div>
+        <div class="results-list" id="resultsList"></div>
+        <button class="quest-button" onclick="restartQuest()">🔄 EMBARK ON NEW QUEST 🔄</button>
+    </div>
+
+    <script>
+        let startTime, timerInterval;
+        let challenges = [];
+
+        function generateChallenges() {
+            challenges = [];
+            const operations = [
+                { type: '+', symbol: '⚔️', fn: (a, b) => a + b, name: 'Addition' },
+                { type: '-', symbol: '🛡️', fn: (a, b) => a - b, name: 'Subtraction' },
+                { type: '×', symbol: '✨', fn: (a, b) => a * b, name: 'Multiplication' },
+                { type: '÷', symbol: '🔮', fn: (a, b) => a / b, name: 'Division' }
+            ];
+
+            operations.forEach((op, index) => {
+                let a = Math.floor(Math.random() * 9) + 1;
+                let b = Math.floor(Math.random() * 9) + 1;
+                
+                if (op.type === '÷') {
+                    a = a * b; // Ensure integer division result
+                }
+                
+                const answer = op.fn(a, b);
+                challenges.push({ 
+                    question: `${a} ${op.type} ${b}`, 
+                    answer: answer,
+                    operation: op.name
+                });
+                
+                document.getElementById(`challenge${index + 1}`).innerHTML = 
+                    `${op.symbol} ${a} <span class="operation-symbol">${op.type}</span> ${b} <span class="operation-symbol">=</span>`;
+            });
+        }
+
+        function startQuest() {
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('questScreen').classList.remove('hidden');
+            generateChallenges();
+            startTime = Date.now();
+            timerInterval = setInterval(updateTimer, 100);
+            
+            // Focus on first input
+            document.querySelector('input[name="answer1"]').focus();
+        }
+
+        function updateTimer() {
+            const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+            document.getElementById('timerDisplay').textContent = `⏰ Time: ${elapsed} seconds`;
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            return ((Date.now() - startTime) / 1000).toFixed(1);
+        }
+
+        document.getElementById('questForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const elapsedTime = stopTimer();
+            const form = e.target;
+            
+            const answers = [
+                parseFloat(form.answer1.value),
+                parseFloat(form.answer2.value),
+                parseFloat(form.answer3.value),
+                parseFloat(form.answer4.value)
+            ];
+            
+            const results = challenges.map((challenge, i) => ({
+                question: challenge.question,
+                operation: challenge.operation,
+                userAnswer: answers[i],
+                correctAnswer: challenge.answer,
+                isCorrect: Math.abs(answers[i] - challenge.answer) < 0.01 // Handle floating point precision
+            }));
+
+            displayResults(results, elapsedTime);
+        });
+
+        function displayResults(results, elapsedTime) {
+            document.getElementById('questScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+            
+            const correctCount = results.filter(r => r.isCorrect).length;
+            const title = correctCount === 4 ? '🏆 LEGENDARY HERO 🏆' : 
+                         correctCount === 3 ? '⚔️ NOBLE WARRIOR ⚔️' :
+                         correctCount === 2 ? '🛡️ BRAVE ADVENTURER 🛡️' : '🔮 APPRENTICE MAGE 🔮';
+            
+            document.querySelector('#resultsScreen .title').textContent = title;
+            document.getElementById('finalTime').textContent = `⏰ Quest Completed in ${elapsedTime} seconds`;
+            
+            const resultsList = document.getElementById('resultsList');
+            resultsList.innerHTML = results.map((r, i) => {
+                const symbols = ['⚔️', '🛡️', '✨', '🔮'];
+                return `
+                    <div class="result-item ${r.isCorrect ? 'result-correct' : 'result-incorrect'}">
+                        <strong>${symbols[i]} ${r.operation} Challenge:</strong><br>
+                        ${r.question} = ?<br>
+                        Your Answer: ${r.userAnswer} | Correct Answer: ${r.correctAnswer}<br>
+                        <em>${r.isCorrect ? '✅ Victory!' : '❌ Defeated!'}</em>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function restartQuest() {
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('startScreen').classList.remove('hidden');
+            document.getElementById('questForm').reset();
+        }
+
+        // Add Enter key navigation between inputs
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.target.classList.contains('answer-input')) {
+                e.preventDefault();
+                const inputs = Array.from(document.querySelectorAll('.answer-input'));
+                const currentIndex = inputs.indexOf(e.target);
+                
+                if (currentIndex < inputs.length - 1) {
+                    inputs[currentIndex + 1].focus();
+                } else {
+                    document.querySelector('button[type="submit"]').click();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
